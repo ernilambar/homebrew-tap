@@ -5,7 +5,7 @@ class Kase < Formula
   desc "CLI for converting, detecting, and applying string case (Unix-friendly, pipe-safe)"
   homepage "https://github.com/ernilambar/kase"
   url "https://github.com/ernilambar/kase/archive/refs/tags/0.1.0.tar.gz"
-  sha256 "0019dfc4b32d63c1392aa264aed2253c1e0c2fb09216f8e2cc269bbfb8bb49b5"
+  sha256 "b3b71120a27983a0391a105f23d2a686d81fcba6ecfed7b899b0902ea5863c43"
   license "MIT"
 
   depends_on "go" => :build
