@@ -1,23 +1,24 @@
 # homebrew-tap
 
-Homebrew tap for personal projects.
+Homebrew tap for CLI tools.
 
 ## Tap
 
 ```bash
 brew tap ernilambar/tap
+brew trust ernilambar/tap
 ```
 
 ## Formulae
 
 | Formula | Description |
 |---------|-------------|
-| [kase](Formula/kase.rb) | CLI for converting, detecting, and applying string case (kebab, snake, camel, etc.). Unix-friendly, pipe-safe. |
+| [glot](Formula/glot.rb) | CLI tool for translating WordPress `.po` files using any OpenAI-compatible backend. |
 
 ## Install
 
 ```bash
-brew install ernilambar/tap/kase
+brew install ernilambar/tap/glot
 ```
 
 ## Development
@@ -25,23 +26,18 @@ brew install ernilambar/tap/kase
 After editing a formula:
 
 ```bash
-brew install --build-from-source ernilambar/tap/kase
+brew install --build-from-source ernilambar/tap/glot
 ```
 
-### Releasing a new version (e.g. kase)
+### Releasing a new version (e.g. glot)
 
-1. **Create a new release in the project repo** (e.g. [ernilambar/kase](https://github.com/ernilambar/kase)):
-   - Create and push a tag: `git tag 0.2.0 && git push origin 0.2.0`
-   - Or create a release on GitHub: **Releases** → **Create a new release** → choose or create a tag (e.g. `0.2.0`).
+1. **Create a new release** in [ernilambar/glot-cli](https://github.com/ernilambar/glot-cli):
+   - Tag must be prefixed with `v` (e.g. `v1.0.1`). The release workflow builds and publishes binaries automatically.
 
-2. **Get the SHA256** of the source tarball (replace `TAG` with your tag, e.g. `0.2.0`):
+2. **Get the SHA256** of each binary:
    ```bash
-   curl -sL "https://github.com/ernilambar/kase/archive/refs/tags/TAG.tar.gz" | shasum -a 256
+   curl -sL "https://github.com/ernilambar/glot-cli/releases/download/vTAG/glot-darwin-arm64" | shasum -a 256
+   curl -sL "https://github.com/ernilambar/glot-cli/releases/download/vTAG/glot-darwin-amd64" | shasum -a 256
    ```
-   Copy the first value (the 64-character hash); the part after the space is just `-` (stdin).
 
-3. **Update `Formula/kase.rb`**: set `url` to the new tag and paste the hash into `sha256`:
-   ```ruby
-   url "https://github.com/ernilambar/kase/archive/refs/tags/0.2.0.tar.gz"
-   sha256 "paste_the_64_char_hash_here"
-   ```
+3. **Update `Formula/glot.rb`**: bump `version`, update both `url` and `sha256` values for arm and intel.
