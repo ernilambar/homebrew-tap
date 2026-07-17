@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//Users/nilambar/Code/personal/glot-cli/**)",
+      "Bash(rtk curl *)",
+      "Bash(python3 -c \"import sys,json; r=json.load\\(sys.stdin\\); [print\\(a['name'], a['browser_download_url']\\) for a in r['assets']]\")",
+      "Bash(shasum -a 256)",
+      "Bash(wait)",
+      "Bash(rtk git *)"
+    ]
+  }
+}
