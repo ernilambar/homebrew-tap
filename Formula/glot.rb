@@ -10,7 +10,7 @@ class Glot < Formula
   on_macos do
     on_arm do
       url "https://github.com/ernilambar/glot-cli/releases/download/v1.0.0/glot-darwin-arm64"
-      sha256 "ed0caa355a3d980ee1becdb25f577ccceed8b12ea3a02d3ac02dbc8ec290dd0d"
+      sha256 "dfd0b0d2ac50103696ce9d0ddff592dc655ad03e50684c2cde160408551e9d6e"
     end
     on_intel do
       url "https://github.com/ernilambar/glot-cli/releases/download/v1.0.0/glot-darwin-amd64"
