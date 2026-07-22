@@ -4,17 +4,17 @@
 class Glot < Formula
   desc "CLI tool for translating WordPress .po files using any OpenAI-compatible backend"
   homepage "https://github.com/ernilambar/glot-cli"
-  version "1.0.0"
+  version "1.0.1"
   license "MIT"
 
   on_macos do
     on_arm do
-      url "https://github.com/ernilambar/glot-cli/releases/download/v1.0.0/glot-darwin-arm64"
-      sha256 "dfd0b0d2ac50103696ce9d0ddff592dc655ad03e50684c2cde160408551e9d6e"
+      url "https://github.com/ernilambar/glot-cli/releases/download/v1.0.1/glot-darwin-arm64"
+      sha256 "f9d6fc11d22d638ffa17bc4d45b7a5843da56b6bcb9daf1a833e2ba4656c1d1b"
     end
     on_intel do
-      url "https://github.com/ernilambar/glot-cli/releases/download/v1.0.0/glot-darwin-amd64"
-      sha256 "2c39285eeb5173abdb6fa30de7bf4f6cca9e27d209a0b21850b88d34614b9015"
+      url "https://github.com/ernilambar/glot-cli/releases/download/v1.0.1/glot-darwin-amd64"
+      sha256 "d8d2d6c74bcebd5710fdc039613020526ad5fd07507bfb56f65b870a2aad2e12"
     end
   end
 
