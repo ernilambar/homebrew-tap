@@ -4,17 +4,17 @@
 class Skycast < Formula
   desc "Terminal weather app"
   homepage "https://github.com/ernilambar/skycast"
-  version "1.0.2"
+  version "1.0.3"
   license "MIT"
 
   on_macos do
     on_arm do
-      url "https://github.com/ernilambar/skycast/releases/download/v1.0.2/skycast-darwin-arm64"
-      sha256 "ab0b4a00c231aeb5444be057e8a33c6fdd7146da6be1f32a950cf0830f43dfed"
+      url "https://github.com/ernilambar/skycast/releases/download/v1.0.3/skycast-darwin-arm64"
+      sha256 "1cc5cc2293d38c5ed9d6f469db6387eada6df421e40c5f90cd9e9e1bc81b32ea"
     end
     on_intel do
-      url "https://github.com/ernilambar/skycast/releases/download/v1.0.2/skycast-darwin-amd64"
-      sha256 "31ef6327ca7250b762d2acb2cb0d49373fa749fae11a4a7a2e65515cbcc2925f"
+      url "https://github.com/ernilambar/skycast/releases/download/v1.0.3/skycast-darwin-amd64"
+      sha256 "d8077ae4d326b7482fa24bee7e523e88aba19080d4ace02311b1ad707536ba3f"
     end
   end
 
