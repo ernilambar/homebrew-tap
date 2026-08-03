@@ -1,0 +1,96 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+# Creates a new formula from a GitHub release: fetches the darwin-arm64/amd64
+# asset hashes and repo license, then writes Formula/<name>.rb from the
+# standard template.
+#
+# Usage: bin/add-formula <name> <owner/repo> <version> <desc>
+# Example: bin/add-formula uplet ernilambar/uplet 1.0.0 "Checks if a URL is up and the page actually exists, not just a soft 404"
+
+require "digest"
+require "json"
+require "tmpdir"
+
+name, owner_repo, version, desc = ARGV
+
+if [name, owner_repo, version, desc].any?(&:nil?)
+  warn "Usage: bin/add-formula <name> <owner/repo> <version> <desc>"
+  exit 1
+end
+
+repo_root = File.expand_path("..", __dir__)
+formula_path = File.join(repo_root, "Formula", "#{name}.rb")
+
+abort "Formula already exists: #{formula_path}" if File.exist?(formula_path)
+
+tag = "v#{version}"
+
+releases_json = `gh release view #{tag} --repo #{owner_repo} --json assets 2>&1`
+abort "Failed to fetch release #{tag} from #{owner_repo}:\n#{releases_json}" unless $?.success?
+
+assets = JSON.parse(releases_json)["assets"]
+
+def find_sha256(assets, asset_name)
+  asset = assets.find { |a| a["name"] == asset_name }
+  abort "No asset named #{asset_name} in this release. Available: #{assets.map { |a| a['name'] }.join(', ')}" unless asset
+
+  digest = asset["digest"]
+  return digest.sub("sha256:", "") if digest
+
+  puts "  #{asset_name} has no digest on GitHub, downloading to hash it..."
+  Dir.mktmpdir do |dir|
+    dest = File.join(dir, asset_name)
+    system("curl", "-fsSL", "-o", dest, asset["url"]) || abort("Failed to download #{asset['url']}")
+    return Digest::SHA256.file(dest).hexdigest
+  end
+end
+
+puts "Fetching asset hashes..."
+arm64_sha = find_sha256(assets, "#{name}-darwin-arm64")
+amd64_sha = find_sha256(assets, "#{name}-darwin-amd64")
+
+license_json = `gh api repos/#{owner_repo} --jq .license.spdx_id 2>&1`
+license = $?.success? ? license_json.strip : ""
+license = "" if license == "null"
+
+class_name = name.capitalize
+
+license_line = license.empty? ? "" : "\n  license \"#{license}\""
+
+template = <<~RUBY
+  # typed: false
+  # frozen_string_literal: true
+
+  class #{class_name} < Formula
+    desc "#{desc}"
+    homepage "https://github.com/#{owner_repo}"
+    version "#{version}"#{license_line}
+
+    on_macos do
+      on_arm do
+        url "https://github.com/#{owner_repo}/releases/download/#{tag}/#{name}-darwin-arm64"
+        sha256 "#{arm64_sha}"
+      end
+      on_intel do
+        url "https://github.com/#{owner_repo}/releases/download/#{tag}/#{name}-darwin-amd64"
+        sha256 "#{amd64_sha}"
+      end
+    end
+
+    def install
+      bin.install Dir["#{name}-darwin-*"].first => "#{name}"
+    end
+
+    test do
+      assert_match version.to_s, shell_output("\#{bin}/#{name} --version")
+    end
+  end
+RUBY
+
+File.write(formula_path, template)
+
+puts "Wrote #{formula_path}"
+system("brew", "style", formula_path)
+
+puts "\nNext: sanity-check it (see README.md#adding-a-new-formula), then add it to the Formulae table."
