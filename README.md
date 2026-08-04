@@ -14,6 +14,7 @@ brew trust ernilambar/tap
 | Formula | Description |
 |---------|-------------|
 | [domradar](Formula/domradar.rb) | CLI tool to check domain name availability. |
+| [eyep](Formula/eyep.rb) | Inspect geographical and network details for an IP address or local machine. |
 | [glot](Formula/glot.rb) | CLI tool for translating WordPress `.po` files using any OpenAI-compatible backend. |
 | [skycast](Formula/skycast.rb) | Terminal weather app. |
 | [uplet](Formula/uplet.rb) | Checks if a URL is up and the page actually exists, not just a soft 404. |
