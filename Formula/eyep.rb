@@ -7,6 +7,8 @@ class Eyep < Formula
   url "https://github.com/ernilambar/eyep/releases/download/v1.0.0/eyep"
   sha256 "048223a5e128a9ca15d9bfe8552988303cabc69e50e0a89ad14843b98cf6d853"
 
+  depends_on "jq"
+
   def install
     bin.install "eyep"
   end
