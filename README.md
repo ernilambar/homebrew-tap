@@ -66,3 +66,21 @@ brew install --build-from-source ernilambar/tap/glot
    ```
    This works for any formula in this tap that follows the standard `version` / `url` / `sha256` template (e.g. `bin/release-formula glot 1.0.9`).
 
+3. **Verify the update** (as done for `eyep` `1.0.1`):
+   - For formulas **without** an explicit `version` line (like `eyep`, where version is inferred from the URL), `bin/release-formula` errors with `Could not find a version line`. Update manually — always download to a file first before hashing (never pipe `curl` to `shasum`):
+     ```bash
+     curl -sLo /tmp/eyep-1.0.1 "https://github.com/ernilambar/eyep/releases/download/v1.0.1/eyep"
+     shasum -a 256 /tmp/eyep-1.0.1
+     # 29dab417b51b695091e51fe95822a54a59b09e7c6396d2f2718d04996c63d5d1
+     ```
+     Then update `url` and `sha256` in `Formula/eyep.rb`.
+   - Style-check:
+     ```bash
+     brew style Formula/eyep.rb
+     # 1 file inspected, no offenses detected
+     ```
+   - Audit (use formula name — `brew audit [path]` is disabled):
+     ```bash
+     brew audit --strict --formula ernilambar/tap/eyep
+     ```
+
