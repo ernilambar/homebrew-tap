@@ -60,20 +60,18 @@ brew install --build-from-source ernilambar/tap/glot
 1. **Create a new release** in the upstream repo, e.g. [ernilambar/domradar](https://github.com/ernilambar/domradar):
    - Tag must be prefixed with `v` (e.g. `v1.0.1`). The release workflow builds and publishes binaries automatically.
 
-2. **Run the release script**, which downloads both binaries, hashes them, and updates the formula in place:
+2. **Run the release script**, which downloads each asset, hashes it, and updates the formula in place:
    ```bash
    bin/release-formula domradar 1.0.1
    ```
-   This works for any formula in this tap that follows the standard `version` / `url` / `sha256` template (e.g. `bin/release-formula glot 1.0.9`).
+   This works for any formula in this tap (e.g. `bin/release-formula glot 1.0.9`), including those without an explicit `version` line (like `eyep`, where the version is inferred from the URL). The old version and tag format are detected from the existing URL.
 
-3. **Verify the update** (as done for `eyep` `1.0.1`):
-   - For formulas **without** an explicit `version` line (like `eyep`, where version is inferred from the URL), `bin/release-formula` errors with `Could not find a version line`. Update manually — always download to a file first before hashing (never pipe `curl` to `shasum`):
-     ```bash
-     curl -sLo /tmp/eyep-1.0.1 "https://github.com/ernilambar/eyep/releases/download/v1.0.1/eyep"
-     shasum -a 256 /tmp/eyep-1.0.1
-     # 29dab417b51b695091e51fe95822a54a59b09e7c6396d2f2718d04996c63d5d1
-     ```
-     Then update `url` and `sha256` in `Formula/eyep.rb`.
+3. **Verify the update** (as done for `eyep` `1.0.3`):
+   - For formulas without an explicit `version` line (like `eyep`, where version is inferred from the URL), `bin/release-formula` infers the old version from the URL tag and updates `url`/`sha256` in place — no manual step required. If you ever need to update manually, always download to a file first before hashing (never pipe `curl` to `shasum`):
+      ```bash
+      curl -sLo /tmp/eyep-1.0.3 "https://github.com/ernilambar/eyep/releases/download/v1.0.3/eyep"
+      shasum -a 256 /tmp/eyep-1.0.3
+      ```
    - Style-check:
      ```bash
      brew style Formula/eyep.rb
