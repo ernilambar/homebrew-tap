@@ -13,12 +13,12 @@ brew trust ernilambar/tap
 
 | Formula | Description |
 |---------|-------------|
-| [domradar](Formula/domradar.rb) | CLI tool to check domain name availability. |
-| [eyep](Formula/eyep.rb) | Inspect geographical and network details for an IP address or local machine. |
-| [glot](Formula/glot.rb) | CLI tool for translating WordPress `.po` files using any OpenAI-compatible backend. |
-| [skycast](Formula/skycast.rb) | Terminal weather app. |
-| [uplet](Formula/uplet.rb) | Checks if a URL is up and the page actually exists, not just a soft 404. |
-| [zaid](Formula/zaid.rb) | AI-powered CLI toolkit. |
+| [domradar](https://github.com/ernilambar/domradar) | CLI tool to check domain name availability. |
+| [eyep](https://github.com/ernilambar/eyep) | Inspect geographical and network details for an IP address or local machine. |
+| [glot](https://github.com/ernilambar/glot-cli) | CLI tool for translating WordPress `.po` files using any OpenAI-compatible backend. |
+| [skycast](https://github.com/ernilambar/skycast) | Terminal weather app. |
+| [uplet](https://github.com/ernilambar/uplet) | Checks if a URL is up and the page actually exists, not just a soft 404. |
+| [zaid](https://github.com/ernilambar/zaid) | AI-powered CLI toolkit. |
 
 ## Install
 
