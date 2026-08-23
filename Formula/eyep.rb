@@ -4,8 +4,8 @@
 class Eyep < Formula
   desc "Inspect geographical and network details for an IP address or local machine"
   homepage "https://github.com/ernilambar/eyep"
-  url "https://github.com/ernilambar/eyep/releases/download/v1.0.1/eyep"
-  sha256 "29dab417b51b695091e51fe95822a54a59b09e7c6396d2f2718d04996c63d5d1"
+  url "https://github.com/ernilambar/eyep/releases/download/v1.0.2/eyep"
+  sha256 "bc30ad16198a354f4eebaff960a0536faf00f0c5bba72ed4f89c381a5cda84db"
 
   depends_on "jq"
 
