@@ -4,6 +4,11 @@
 # Bumps a formula to a new version: downloads each release asset to a file,
 # hashes it, and rewrites the version/url/sha256 fields in place.
 #
+# Works with both standard formulae (explicit version line + arm64/amd64 URL
+# pair) and eyep-style formulae (no version line, single URL). The old version
+# and tag format are inferred from the existing URL, so the version line is
+# optional.
+#
 # Usage: bin/release-formula <formula> <new_version>
 # Example: bin/release-formula glot 1.0.5
 
@@ -25,21 +30,32 @@ abort "Formula not found: #{formula_path}" unless File.exist?(formula_path)
 
 content = File.read(formula_path)
 
+# Prefer the explicit version line if present (standard template).
+# For formulae without one (e.g. eyep), the version is derived from the URL tag.
 version_match = content.match(/^\s*version\s+"([^"]+)"/)
-abort "Could not find a version line in #{formula_path}" unless version_match
-old_version = version_match[1]
-
-abort "#{formula_name} is already at version #{new_version}" if old_version == new_version
 
 urls = content.scan(/url\s+"([^"]+)"/).flatten
 abort "No url entries found in #{formula_path}" if urls.empty?
+
+# Extract the release tag from the first URL (e.g. "v1.0.0" or "1.0.0")
+tag_match = urls.first.match(%r{/releases/download/([^/]+)/})
+abort "Could not find release tag in URL: #{urls.first}" unless tag_match
+old_tag = tag_match[1]
+
+# Strip the tag prefix to get the bare version number, then build the new tag
+tag_version = old_tag.sub(/\A[^0-9]*/, "")
+new_tag = old_tag.sub(tag_version, new_version)
+
+old_version = version_match ? version_match[1] : tag_version
+
+abort "#{formula_name} is already at version #{new_version}" if old_version == new_version
 
 puts "Releasing #{formula_name}: #{old_version} -> #{new_version}"
 
 Dir.mktmpdir do |dir|
   urls.each do |old_url|
-    new_url = old_url.sub("/v#{old_version}/", "/v#{new_version}/")
-    abort "Could not find version tag 'v#{old_version}' in url: #{old_url}" if new_url == old_url
+    new_url = old_url.sub("/#{old_tag}/", "/#{new_tag}/")
+    abort "Could not find release tag '#{old_tag}' in URL: #{old_url}" if new_url == old_url
 
     dest = File.join(dir, File.basename(new_url))
 
@@ -57,7 +73,8 @@ Dir.mktmpdir do |dir|
   end
 end
 
-content.sub!(/version\s+"#{Regexp.escape(old_version)}"/, "version \"#{new_version}\"")
+# Update the version line only if it exists (eyep-style formulas skip this)
+content.sub!(/version\s+"#{Regexp.escape(old_version)}"/, "version \"#{new_version}\"") if version_match
 
 File.write(formula_path, content)
 
