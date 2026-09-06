@@ -7,8 +7,8 @@
 Always download to a file first:
 
 ```bash
-curl -sLo /tmp/glot-arm64 "https://github.com/ernilambar/glot-cli/releases/download/vTAG/glot-darwin-arm64"
-shasum -a 256 /tmp/glot-arm64
+curl -sLo /tmp/binary-name "https://github.com/OWNER/REPO/releases/download/vTAG/darwin-arm64"
+shasum -a 256 /tmp/binary-name
 ```
 
 Or use `brew fetch` after setting the formula url/sha256 to a placeholder — Homebrew will report the correct hash in the error output.
