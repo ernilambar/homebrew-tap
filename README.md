@@ -13,6 +13,7 @@ brew trust ernilambar/tap
 
 | Formula | Description |
 |---------|-------------|
+| [codespur](https://github.com/ernilambar/codespur) | AI-powered PR reviewer. |
 | [domradar](https://github.com/ernilambar/domradar) | CLI tool to check domain name availability. |
 | [eyep](https://github.com/ernilambar/eyep) | Inspect geographical and network details for an IP address or local machine. |
 | [glot](https://github.com/ernilambar/glot-cli) | CLI tool for translating WordPress `.po` files using any OpenAI-compatible backend. |
