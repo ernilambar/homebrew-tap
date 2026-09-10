@@ -4,17 +4,17 @@
 class Wxbot < Formula
   desc "Conversational weather assistant CLI for any OpenAI-compatible backend"
   homepage "https://github.com/ernilambar/wxbot"
-  version "0.1.0"
+  version "0.1.1"
   license "MIT"
 
   on_macos do
     on_arm do
-      url "https://github.com/ernilambar/wxbot/releases/download/v0.1.0/wxbot-darwin-arm64"
-      sha256 "3332ab85ade733f687c399831a57c961b53e949c6f74137d94d08601c5e817f7"
+      url "https://github.com/ernilambar/wxbot/releases/download/v0.1.1/wxbot-darwin-arm64"
+      sha256 "a836b8671f5d2d99afe3719a93247aa22099ffb2b44c2be7897770b5b6444cff"
     end
     on_intel do
-      url "https://github.com/ernilambar/wxbot/releases/download/v0.1.0/wxbot-darwin-amd64"
-      sha256 "4e1eef6db4fff20aac824000ee2c277daa2f3e7a50f9ab40470148039397b72e"
+      url "https://github.com/ernilambar/wxbot/releases/download/v0.1.1/wxbot-darwin-amd64"
+      sha256 "669a2e17a10bd6569bf1ee14f381e791381ea895a72d11ddba16ab32e1da0a7e"
     end
   end
 
