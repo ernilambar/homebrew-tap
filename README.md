@@ -1,6 +1,6 @@
 # homebrew-tap
 
-Homebrew tap for CLI tools.
+Homebrew tap for CLI tools and macOS apps.
 
 ## Tap
 
@@ -22,10 +22,17 @@ brew trust ernilambar/tap
 | [wxbot](https://github.com/ernilambar/wxbot) | Conversational weather assistant CLI for any OpenAI-compatible backend. |
 | [zaid](https://github.com/ernilambar/zaid) | AI-powered CLI toolkit. |
 
+## Casks
+
+| Cask | Description |
+|------|-------------|
+| [tinytext](https://github.com/ernilambar/tinytext) | Native text editor built with GPUI Kit. |
+
 ## Install
 
 ```bash
 brew install ernilambar/tap/glot
+brew install --cask ernilambar/tap/tinytext
 ```
 
 ## Development
@@ -84,3 +91,17 @@ brew install --build-from-source ernilambar/tap/glot
      brew audit --strict --formula ernilambar/tap/eyep
      ```
 
+### Releasing a new cask version (e.g. tinytext)
+
+1. **Create a new release** in the upstream repo (tag prefixed with `v`, e.g. `v0.1.2`).
+
+2. **Run the release script**, which downloads the asset, hashes it, and updates `version` and `sha256` in place:
+   ```bash
+   bin/release-cask tinytext 0.1.2
+   ```
+   The cask's `url` must interpolate `#{version}`; the script errors out otherwise.
+
+3. **Audit** (against the installed tap, as with formulae):
+   ```bash
+   brew audit --cask --online ernilambar/tap/tinytext
+   ```
