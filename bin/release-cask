@@ -1,0 +1,63 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+# Bumps a cask to a new version: downloads the release asset to a file,
+# hashes it, and rewrites the version/sha256 fields in place.
+#
+# Expects the standard cask template: a single `version` line, a single
+# `sha256` line, and a `url` that interpolates `#{version}`.
+#
+# Usage: bin/release-cask <cask> <new_version>
+# Example: bin/release-cask tinytext 0.1.2
+
+require "digest"
+require "tmpdir"
+
+cask_name = ARGV[0]
+new_version = ARGV[1]
+
+if cask_name.nil? || new_version.nil?
+  warn "Usage: bin/release-cask <cask> <new_version>"
+  exit 1
+end
+
+repo_root = File.expand_path("..", __dir__)
+cask_path = File.join(repo_root, "Casks", "#{cask_name}.rb")
+
+abort "Cask not found: #{cask_path}" unless File.exist?(cask_path)
+
+content = File.read(cask_path)
+
+version_match = content.match(/^\s*version\s+"([^"]+)"/)
+abort "No version line found in #{cask_path}" unless version_match
+old_version = version_match[1]
+
+abort "#{cask_name} is already at version #{new_version}" if old_version == new_version
+
+url_match = content.match(/^\s*url\s+"([^"]+)"/)
+abort "No url line found in #{cask_path}" unless url_match
+url_template = url_match[1]
+abort "url must interpolate \#{version}: #{url_template}" unless url_template.include?('#{version}')
+
+new_url = url_template.gsub('#{version}', new_version)
+
+puts "Releasing #{cask_name}: #{old_version} -> #{new_version}"
+
+sha256 = Dir.mktmpdir do |dir|
+  dest = File.join(dir, File.basename(new_url))
+
+  puts "  Downloading #{File.basename(new_url)}..."
+  system("curl", "-fsSL", "-o", dest, new_url) || abort("Failed to download #{new_url}")
+
+  Digest::SHA256.file(dest).hexdigest
+end
+puts "  sha256: #{sha256}"
+
+content.sub!(/^(\s*version\s+")[^"]+(")/) { "#{Regexp.last_match(1)}#{new_version}#{Regexp.last_match(2)}" }
+replaced = content.sub!(/^(\s*sha256\s+")[^"]+(")/) { "#{Regexp.last_match(1)}#{sha256}#{Regexp.last_match(2)}" }
+abort "No sha256 line found in #{cask_path}" unless replaced
+
+File.write(cask_path, content)
+
+puts "Updated #{cask_path}"
+system("brew", "style", cask_path)
