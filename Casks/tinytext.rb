@@ -1,6 +1,6 @@
 cask "tinytext" do
-  version "0.1.8"
-  sha256 "adeecb5924727b5e977022ad4ba8a131b94a036a57dc489f1e74b9be04352024"
+  version "0.1.9"
+  sha256 "2b04ecb731b82dbb0a277b6217e65c11ec39c22df4a3d9b9c9300bad858cbccd"
 
   url "https://github.com/ernilambar/tinytext/releases/download/v#{version}/Tinytext-macos-arm64.zip"
   name "Tinytext"
