@@ -4,8 +4,8 @@
 
 The `bin/` directory contains helper scripts for managing formulae and casks:
 
-- `bin/add-formula <name> <owner/repo> <version> <desc>` — Creates a new formula from a GitHub release. Fetches asset hashes (from GitHub digests or by downloading), detects the repo license, and writes `Formula/<name>.rb` from the standard template.
-- `bin/release-formula <formula> <new_version>` — Bumps an existing formula to a new version. Downloads each release asset to a temp directory, hashes it, and rewrites the version/url/sha256 fields in place. Works with both standard formulae (explicit version line + arm64/amd64 pair) and eyep-style formulae (no version line, single URL).
+- `bin/add-formula <name> <owner/repo> <version> <desc>` — Creates a new formula from a GitHub release. Fetches asset hashes (from GitHub digests or by downloading), detects the repo license, and writes `Formula/<name>.rb` from the standard template. The amd64 asset is optional; without it the formula is arm64-only (`depends_on arch: :arm64`, no `on_intel`).
+- `bin/release-formula <formula> <new_version>` — Bumps an existing formula to a new version. Downloads each release asset to a temp directory, hashes it, and rewrites the version/url/sha256 fields in place. Works with both standard formulae (explicit version line + arm64/amd64 pair) and eyep-style formulae (no version line, single URL). If the new release's `on_intel` asset 404s, it drops the `on_intel` block and adds `depends_on arch: :arm64`.
 - `bin/release-cask <cask> <new_version>` — Bumps an existing cask in `Casks/` to a new version. Downloads the release asset, hashes it, and rewrites the version/sha256 fields in place. Requires a single `version`/`sha256` pair and a `url` that interpolates `#{version}`.
 
 ## SHA256 for prebuilt binaries

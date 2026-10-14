@@ -3,7 +3,8 @@
 
 # Creates a new formula from a GitHub release: fetches the darwin-arm64/amd64
 # asset hashes and repo license, then writes Formula/<name>.rb from the
-# standard template.
+# standard template. If the release has no amd64 asset, the formula is
+# arm64-only (no on_intel block, plus `depends_on arch: :arm64`).
 #
 # Usage: bin/add-formula <name> <owner/repo> <version> <desc>
 # Example: bin/add-formula uplet ernilambar/uplet 1.0.0 "Checks if a URL is up and the page actually exists, not just a soft 404"
@@ -31,8 +32,10 @@ abort "Failed to fetch release #{tag} from #{owner_repo}:\n#{releases_json}" unl
 
 assets = JSON.parse(releases_json)["assets"]
 
-def find_sha256(assets, asset_name)
+def find_sha256(assets, asset_name, optional: false)
   asset = assets.find { |a| a["name"] == asset_name }
+  return if optional && asset.nil?
+
   abort "No asset named #{asset_name} in this release. Available: #{assets.map { |a| a['name'] }.join(', ')}" unless asset
 
   digest = asset["digest"]
@@ -48,7 +51,8 @@ end
 
 puts "Fetching asset hashes..."
 arm64_sha = find_sha256(assets, "#{name}-darwin-arm64")
-amd64_sha = find_sha256(assets, "#{name}-darwin-amd64")
+amd64_sha = find_sha256(assets, "#{name}-darwin-amd64", optional: true)
+puts "  No #{name}-darwin-amd64 asset, writing an arm64-only formula" unless amd64_sha
 
 license_json = `gh api repos/#{owner_repo} --jq .license.spdx_id 2>&1`
 license = $?.success? ? license_json.strip : ""
@@ -58,6 +62,17 @@ class_name = name.capitalize
 
 license_line = license.empty? ? "" : "\n  license \"#{license}\""
 
+arch_line = amd64_sha ? "" : "\n\n  depends_on arch: :arm64"
+
+intel_block = if amd64_sha
+  "\n    on_intel do" \
+    "\n      url \"https://github.com/#{owner_repo}/releases/download/#{tag}/#{name}-darwin-amd64\"" \
+    "\n      sha256 \"#{amd64_sha}\"" \
+    "\n    end"
+else
+  ""
+end
+
 template = <<~RUBY
   # typed: false
   # frozen_string_literal: true
@@ -65,17 +80,13 @@ template = <<~RUBY
   class #{class_name} < Formula
     desc "#{desc}"
     homepage "https://github.com/#{owner_repo}"
-    version "#{version}"#{license_line}
+    version "#{version}"#{license_line}#{arch_line}
 
     on_macos do
       on_arm do
         url "https://github.com/#{owner_repo}/releases/download/#{tag}/#{name}-darwin-arm64"
         sha256 "#{arm64_sha}"
-      end
-      on_intel do
-        url "https://github.com/#{owner_repo}/releases/download/#{tag}/#{name}-darwin-amd64"
-        sha256 "#{amd64_sha}"
-      end
+      end#{intel_block}
     end
 
     def install

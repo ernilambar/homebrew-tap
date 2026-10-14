@@ -45,13 +45,13 @@ brew install --build-from-source ernilambar/tap/glot
 
 ### Adding a new formula
 
-1. **Create a release** in the upstream repo, with binaries named `<name>-darwin-arm64` and `<name>-darwin-amd64` attached (tag prefixed with `v`, e.g. `v1.0.0`).
+1. **Create a release** in the upstream repo, with binaries named `<name>-darwin-arm64` and (optionally) `<name>-darwin-amd64` attached (tag prefixed with `v`, e.g. `v1.0.0`).
 
 2. **Run the add script**, which fetches the asset hashes and repo license from GitHub and writes the formula from the standard template:
    ```bash
    bin/add-formula uplet ernilambar/uplet 1.0.0 "Checks if a URL is up and the page actually exists, not just a soft 404"
    ```
-   This assumes the standard `version` / `url` / `sha256` template used by every formula in this tap. It errors out if `Formula/<name>.rb` already exists, or if the release is missing either binary asset.
+   This assumes the standard `version` / `url` / `sha256` template used by every formula in this tap. It errors out if `Formula/<name>.rb` already exists, or if the release is missing the arm64 asset. With no amd64 asset, it writes an arm64-only formula (no `on_intel` block, plus `depends_on arch: :arm64`).
 
 3. **Sanity-check it** before committing:
    ```bash
@@ -73,7 +73,7 @@ brew install --build-from-source ernilambar/tap/glot
    ```bash
    bin/release-formula domradar 1.0.1
    ```
-   This works for any formula in this tap (e.g. `bin/release-formula glot 1.0.9`), including those without an explicit `version` line (like `eyep`, where the version is inferred from the URL). The old version and tag format are detected from the existing URL.
+   This works for any formula in this tap (e.g. `bin/release-formula glot 1.0.9`), including those without an explicit `version` line (like `eyep`, where the version is inferred from the URL). The old version and tag format are detected from the existing URL. If the new release drops the Intel asset (404), the script removes the `on_intel` block and adds `depends_on arch: :arm64`.
 
 3. **Verify the update** (as done for `eyep` `1.0.3`):
    - For formulas without an explicit `version` line (like `eyep`, where version is inferred from the URL), `bin/release-formula` infers the old version from the URL tag and updates `url`/`sha256` in place — no manual step required. If you ever need to update manually, always download to a file first before hashing (never pipe `curl` to `shasum`):
