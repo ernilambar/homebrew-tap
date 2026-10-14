@@ -9,6 +9,9 @@
 # and tag format are inferred from the existing URL, so the version line is
 # optional.
 #
+# If the new release no longer ships the Intel (on_intel) asset, the on_intel
+# block is removed and `depends_on arch: :arm64` is added.
+#
 # Usage: bin/release-formula <formula> <new_version>
 # Example: bin/release-formula glot 1.0.5
 
@@ -50,7 +53,13 @@ old_version = version_match ? version_match[1] : tag_version
 
 abort "#{formula_name} is already at version #{new_version}" if old_version == new_version
 
+intel_url = content[/^\s*on_intel do\s*\n\s*url\s+"([^"]+)"/, 1]
+
 puts "Releasing #{formula_name}: #{old_version} -> #{new_version}"
+
+def http_status(url)
+  `curl -sIL -o /dev/null -w '%{http_code}' #{url}`.strip
+end
 
 Dir.mktmpdir do |dir|
   urls.each do |old_url|
@@ -60,7 +69,14 @@ Dir.mktmpdir do |dir|
     dest = File.join(dir, File.basename(new_url))
 
     puts "  Downloading #{File.basename(new_url)}..."
-    system("curl", "-fsSL", "-o", dest, new_url) || abort("Failed to download #{new_url}")
+    unless system("curl", "-fsSL", "-o", dest, new_url)
+      abort("Failed to download #{new_url}") unless old_url == intel_url && http_status(new_url) == "404"
+
+      puts "  Intel asset not in release, dropping on_intel and adding depends_on arch: :arm64"
+      content.sub!(/^\s*on_intel do\n.*?^\s*end\n/m, "") || abort("Could not remove on_intel block")
+      content.sub!(/^([ \t]*)on_macos do$/) { "#{Regexp.last_match(1)}depends_on arch: :arm64\n\n#{Regexp.last_match(0)}" }
+      next
+    end
 
     sha256 = Digest::SHA256.file(dest).hexdigest
     puts "  sha256: #{sha256}"

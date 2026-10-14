@@ -4,17 +4,15 @@
 class Zaid < Formula
   desc "AI-powered CLI toolkit"
   homepage "https://github.com/ernilambar/zaid"
-  version "1.0.5"
+  version "2.0.0"
   license "MIT"
+
+  depends_on arch: :arm64
 
   on_macos do
     on_arm do
-      url "https://github.com/ernilambar/zaid/releases/download/v1.0.5/zaid-darwin-arm64"
-      sha256 "8c7e110bcfad44c8614cca8c2662f7a2ed6f8266dcd10d1522bb0b08141e6d17"
-    end
-    on_intel do
-      url "https://github.com/ernilambar/zaid/releases/download/v1.0.5/zaid-darwin-amd64"
-      sha256 "ab493c8c02f562e0d8f0be6f7647da49ab339abd3a34a0402c6472f2d2d8f9f5"
+      url "https://github.com/ernilambar/zaid/releases/download/v2.0.0/zaid-darwin-arm64"
+      sha256 "50d6731e8d7b24c9b2ee82c47d635bcd0f3f4927c7282280ae8eef6832b83f00"
     end
   end
 
