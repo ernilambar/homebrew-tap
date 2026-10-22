@@ -25,13 +25,13 @@ brew trust ernilambar/tap
 
 | Cask | Description |
 |------|-------------|
-| [tine](https://github.com/ernilambar/tine) | Native text editor built with GPUI Kit. |
+| [teak](https://github.com/ernilambar/teak) | Fast, lightweight text editor. |
 
 ## Install
 
 ```bash
 brew install ernilambar/tap/glot
-brew install --cask ernilambar/tap/tine
+brew install --cask ernilambar/tap/teak
 ```
 
 ## Development
@@ -90,17 +90,17 @@ brew install --build-from-source ernilambar/tap/glot
      brew audit --strict --formula ernilambar/tap/eyep
      ```
 
-### Releasing a new cask version (e.g. tine)
+### Releasing a new cask version (e.g. teak)
 
 1. **Create a new release** in the upstream repo (tag prefixed with `v`, e.g. `v0.1.2`).
 
 2. **Run the release script**, which downloads the asset, hashes it, and updates `version` and `sha256` in place:
    ```bash
-   bin/release-cask tine 0.2.0
+   bin/release-cask teak 0.2.0
    ```
    The cask's `url` must interpolate `#{version}`; the script errors out otherwise.
 
 3. **Audit** (against the installed tap, as with formulae):
    ```bash
-   brew audit --cask --online ernilambar/tap/tine
+   brew audit --cask --online ernilambar/tap/teak
    ```
