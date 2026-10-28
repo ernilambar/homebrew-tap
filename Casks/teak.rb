@@ -1,6 +1,6 @@
 cask "teak" do
-  version "0.2.5"
-  sha256 "8a504e8778220e1409d278d686a6d921055a84ce16f7ceac950c0a2bbaac2c0c"
+  version "0.2.6"
+  sha256 "ad52d70705404e0e626e72f155aa8eb2a3b095684e151be9125a5e40c4a1530f"
 
   url "https://github.com/ernilambar/teak/releases/download/v#{version}/Teak-macos-arm64.zip"
   name "Teak"
