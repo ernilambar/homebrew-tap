@@ -2,19 +2,17 @@
 # frozen_string_literal: true
 
 class Wxbot < Formula
-  desc "Conversational weather assistant CLI for any OpenAI-compatible backend"
+  desc "AI weather assistant in your terminal"
   homepage "https://github.com/ernilambar/wxbot"
-  version "0.1.3"
+  version "0.1.4"
   license "MIT"
+
+  depends_on arch: :arm64
 
   on_macos do
     on_arm do
-      url "https://github.com/ernilambar/wxbot/releases/download/v0.1.3/wxbot-darwin-arm64"
-      sha256 "8078bd9cf043f5889cd2c353a13a3d5b2de6b279389f64f21236293b7b807ba1"
-    end
-    on_intel do
-      url "https://github.com/ernilambar/wxbot/releases/download/v0.1.3/wxbot-darwin-amd64"
-      sha256 "3e73ba0efbb1ecdae5ea4bad518418574973cb0dd962dfd8de27d81e6495c7a6"
+      url "https://github.com/ernilambar/wxbot/releases/download/v0.1.4/wxbot-darwin-arm64"
+      sha256 "a9274c4519c2a9c56636e1a4fcee8bf83fc4ddc3041e856a4e30258db2bf4b60"
     end
   end
 

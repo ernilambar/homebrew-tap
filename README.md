@@ -18,7 +18,7 @@ brew trust ernilambar/tap
 | [glot](https://github.com/ernilambar/glot-cli) | CLI tool for translating WordPress `.po` files using any OpenAI-compatible backend. |
 | [skycast](https://github.com/ernilambar/skycast) | Terminal weather app. |
 | [uplet](https://github.com/ernilambar/uplet) | Checks if a URL is up and the page actually exists, not just a soft 404. |
-| [wxbot](https://github.com/ernilambar/wxbot) | Conversational weather assistant CLI for any OpenAI-compatible backend. |
+| [wxbot](https://github.com/ernilambar/wxbot) | AI weather assistant in your terminal. |
 | [zaid](https://github.com/ernilambar/zaid) | AI-powered CLI toolkit. |
 
 ## Casks
