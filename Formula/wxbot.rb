@@ -4,15 +4,15 @@
 class Wxbot < Formula
   desc "AI weather assistant in your terminal"
   homepage "https://github.com/ernilambar/wxbot"
-  version "0.1.4"
+  version "0.1.5"
   license "MIT"
 
   depends_on arch: :arm64
 
   on_macos do
     on_arm do
-      url "https://github.com/ernilambar/wxbot/releases/download/v0.1.4/wxbot-darwin-arm64"
-      sha256 "a9274c4519c2a9c56636e1a4fcee8bf83fc4ddc3041e856a4e30258db2bf4b60"
+      url "https://github.com/ernilambar/wxbot/releases/download/v0.1.5/wxbot-darwin-arm64"
+      sha256 "ed646f01a9312a1db5e83156136f806aefd4c7cdfbf9271cabc76faea8acda16"
     end
   end
 
