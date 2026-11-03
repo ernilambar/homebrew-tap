@@ -8,6 +8,12 @@ The `bin/` directory contains helper scripts for managing formulae and casks:
 - `bin/release-formula <formula> <new_version>` — Bumps an existing formula to a new version. Downloads each release asset to a temp directory, hashes it, and rewrites the version/url/sha256 fields in place. Works with both standard formulae (explicit version line + arm64/amd64 pair) and eyep-style formulae (no version line, single URL). If the new release's `on_intel` asset 404s, it drops the `on_intel` block and adds `depends_on arch: :arm64`.
 - `bin/release-cask <cask> <new_version>` — Bumps an existing cask in `Casks/` to a new version. Downloads the release asset, hashes it, and rewrites the version/sha256 fields in place. Requires a single `version`/`sha256` pair and a `url` that interpolates `#{version}`.
 
+## Commit messages
+
+Never add `Co-Authored-By:` trailers, or any attribution to AI assistants or third parties, to commit messages in this repo. GitHub credits `Co-Authored-By` addresses as co-authors and lists them in the repository's Contributors sidebar.
+
+A plain subject line (and body, when useful) is enough. No trailers, no `Generated with ...` footers.
+
 ## SHA256 for prebuilt binaries
 
 **Never compute sha256 by piping curl to shasum.** curl decompresses HTTP transport encoding on the fly, which can differ from what Homebrew writes to disk.
