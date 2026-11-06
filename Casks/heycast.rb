@@ -1,6 +1,6 @@
 cask "heycast" do
-  version "0.2.0"
-  sha256 "bee545ae9d2d92c3ac2751c66e2f95e625780fd232783f934b9fd0cf82ddef7b"
+  version "0.2.1"
+  sha256 "eeb49181d42c6a89efdb1c77992c81c668674607aa450e71be14b85b7b07a241"
 
   url "https://github.com/ernilambar/heycast/releases/download/v#{version}/Heycast-macos-arm64.zip"
   name "Heycast"
