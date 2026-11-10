@@ -25,6 +25,7 @@ brew trust ernilambar/tap
 
 | Cask | Description |
 |------|-------------|
+| [chatmio](https://github.com/ernilambar/chatmio) | Desktop client for OpenAI-compatible chat APIs. |
 | [heycast](https://github.com/ernilambar/heycast) | Keyboard-driven launcher palette. |
 | [teak](https://github.com/ernilambar/teak) | Fast, lightweight text editor. |
 | [termiz](https://github.com/ernilambar/termiz) | Minimal, GPU-accelerated terminal emulator. |
