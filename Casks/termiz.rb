@@ -1,6 +1,6 @@
 cask "termiz" do
-  version "0.1.2"
-  sha256 "8cf8f8ccab1e9f2eb8226033e33c9880f39bf5e300e92a409444c53a2ff089bf"
+  version "0.1.3"
+  sha256 "f10cb0a5cab0611491f5dc4cbb690c257ea00e85233b46a64880e38dd045d5d4"
 
   url "https://github.com/ernilambar/termiz/releases/download/v#{version}/Termiz-macos-arm64.zip"
   name "Termiz"
