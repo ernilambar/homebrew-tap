@@ -14,6 +14,7 @@ brew trust ernilambar/tap
 | Formula | Description |
 |---------|-------------|
 | [domradar](https://github.com/ernilambar/domradar) | CLI tool to check domain name availability. |
+| [epfix](https://github.com/ernilambar/epfix) | Fix episode names in place. |
 | [eyep](https://github.com/ernilambar/eyep) | Inspect geographical and network details for an IP address or local machine. |
 | [glot](https://github.com/ernilambar/glot-cli) | CLI tool for translating WordPress `.po` files using any OpenAI-compatible backend. |
 | [skycast](https://github.com/ernilambar/skycast) | Terminal weather app. |
