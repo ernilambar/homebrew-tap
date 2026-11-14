@@ -76,13 +76,13 @@ brew install --build-from-source ernilambar/tap/glot
    ```bash
    bin/release-formula domradar 1.0.1
    ```
-   This works for any formula in this tap (e.g. `bin/release-formula glot 1.0.9`), including those without an explicit `version` line (like `eyep`, where the version is inferred from the URL). The old version and tag format are detected from the existing URL. If the new release drops the Intel asset (404), the script removes the `on_intel` block and adds `depends_on arch: :arm64`.
+   This works for any formula in this tap (e.g. `bin/release-formula glot 1.0.9`), including legacy formulae without an explicit `version` line, where the version is inferred from the URL tag. The old version and tag format are detected from the existing URL. If the new release drops the Intel asset (404), the script removes the `on_intel` block and adds `depends_on arch: :arm64`.
 
-3. **Verify the update** (as done for `eyep` `1.0.3`):
-   - For formulas without an explicit `version` line (like `eyep`, where version is inferred from the URL), `bin/release-formula` infers the old version from the URL tag and updates `url`/`sha256` in place — no manual step required. If you ever need to update manually, always download to a file first before hashing (never pipe `curl` to `shasum`):
+3. **Verify the update** (as done for `eyep` `1.2.0`):
+   - If you ever need to update manually, always download to a file first before hashing (never pipe `curl` to `shasum`):
       ```bash
-      curl -sLo /tmp/eyep-1.0.3 "https://github.com/ernilambar/eyep/releases/download/v1.0.3/eyep"
-      shasum -a 256 /tmp/eyep-1.0.3
+      curl -sLo /tmp/eyep "https://github.com/ernilambar/eyep/releases/download/v1.2.0/eyep-darwin-arm64"
+      shasum -a 256 /tmp/eyep
       ```
    - Style-check:
      ```bash

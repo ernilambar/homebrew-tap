@@ -4,13 +4,22 @@
 class Eyep < Formula
   desc "Inspect geographical and network details for an IP address or local machine"
   homepage "https://github.com/ernilambar/eyep"
-  url "https://github.com/ernilambar/eyep/releases/download/v1.1.0/eyep"
-  sha256 "0be36e7029f05d322bbb331fe6a8101e37f9336e0cccb419c9cd6f917b7fab21"
+  version "1.2.0"
+  license "MIT"
 
-  depends_on "jq"
+  on_macos do
+    on_arm do
+      url "https://github.com/ernilambar/eyep/releases/download/v1.2.0/eyep-darwin-arm64"
+      sha256 "b2824356859f525a5f4433586c0e6c2f5e971b65ea637f5a9f75af4885c1b409"
+    end
+    on_intel do
+      url "https://github.com/ernilambar/eyep/releases/download/v1.2.0/eyep-darwin-amd64"
+      sha256 "9a6bef3c573751450bf44e9bffe73d73eebf91ef6617218d935a55d647932414"
+    end
+  end
 
   def install
-    bin.install "eyep"
+    bin.install Dir["eyep-darwin-*"].first => "eyep"
   end
 
   test do
