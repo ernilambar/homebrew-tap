@@ -1,0 +1,99 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+# Bumps a formula to a new version: downloads the release asset to a file,
+# hashes it, and rewrites the version/url/sha256 fields in place.
+#
+# The old version and tag format are inferred from the existing URL, so the
+# version line is optional.
+#
+# Usage: bin/release-formula <formula> <new_version>
+# Example: bin/release-formula glot 1.0.5
+
+require "digest"
+require "json"
+require "open3"
+require "tmpdir"
+
+formula_name = ARGV[0]
+new_version = ARGV[1]&.delete_prefix("v")
+
+if formula_name.nil? || new_version.nil?
+  warn "Usage: bin/release-formula <formula> <new_version>"
+  exit 1
+end
+
+repo_root = File.expand_path("..", __dir__)
+formula_path = File.join(repo_root, "Formula", "#{formula_name}.rb")
+
+abort "Formula not found: #{formula_path}" unless File.exist?(formula_path)
+
+content = File.read(formula_path)
+
+# Formulae carry no version line (Homebrew reads it from the URL), so the
+# version is derived from the URL tag; an explicit version line wins if present.
+version_match = content.match(/^\s*version\s+"([^"]+)"/)
+
+urls = content.scan(/url\s+"([^"]+)"/).flatten
+abort "No url entries found in #{formula_path}" if urls.empty?
+
+# Extract the release tag from the first URL (e.g. "v1.0.0" or "1.0.0")
+tag_match = urls.first.match(%r{/releases/download/([^/]+)/})
+abort "Could not find release tag in URL: #{urls.first}" unless tag_match
+old_tag = tag_match[1]
+
+# Strip the tag prefix to get the bare version number, then build the new tag
+tag_version = old_tag.sub(/\A[^0-9]*/, "")
+new_tag = old_tag.sub(tag_version, new_version)
+
+old_version = version_match ? version_match[1] : tag_version
+
+abort "#{formula_name} is already at version #{new_version}" if old_version == new_version
+
+puts "Releasing #{formula_name}: #{old_version} -> #{new_version}"
+
+def github_digests(url)
+  m = url.match(%r{github\.com/([^/]+/[^/]+)/releases/download/([^/]+)/})
+  abort "Not a GitHub release URL: #{url}" unless m
+  out, err, status = Open3.capture3("gh", "release", "view", m[2], "--repo", m[1], "--json", "assets")
+  abort "Failed to fetch release #{m[2]} from #{m[1]}:\n#{err}" unless status.success?
+  JSON.parse(out)["assets"].to_h { |a| [a["name"], a["digest"]&.delete_prefix("sha256:")] }
+end
+
+version_in_name = /(?<![\d.])#{Regexp.escape(old_version)}(?![\d.])/
+digests = nil
+
+Dir.mktmpdir do |dir|
+  urls.each do |old_url|
+    new_url = old_url.sub("/#{old_tag}/", "/#{new_tag}/")
+    abort "Could not find release tag '#{old_tag}' in URL: #{old_url}" if new_url == old_url
+
+    # Bump the version in the asset name too, if it embeds one.
+    new_url = new_url.sub(%r{[^/]+\z}) { |file| file.gsub(version_in_name, new_version) }
+
+    dest = File.join(dir, File.basename(new_url))
+
+    puts "  Downloading #{File.basename(new_url)}..."
+    abort("Failed to download #{new_url}") unless system("curl", "-fsSL", "-o", dest, new_url)
+
+    sha256 = Digest::SHA256.file(dest).hexdigest
+    digests ||= github_digests(new_url)
+    expected = digests[File.basename(new_url)]
+    abort "sha256 mismatch: GitHub reports #{expected}, downloaded file hashes to #{sha256}" if expected && expected != sha256
+    puts "  sha256: #{sha256}"
+
+    escaped_old_url = Regexp.escape(old_url)
+    replaced = content.sub!(/url\s+"#{escaped_old_url}"(\s*\n\s*sha256\s+")[^"]+(")/) do
+      "url \"#{new_url}\"#{Regexp.last_match(1)}#{sha256}#{Regexp.last_match(2)}"
+    end
+    abort "Could not find a sha256 line following url: #{old_url}" unless replaced
+  end
+end
+
+# Update the version line only if it exists
+content.sub!(/version\s+"#{Regexp.escape(old_version)}"/, "version \"#{new_version}\"") if version_match
+
+File.write(formula_path, content)
+
+puts "Updated #{formula_path}"
+abort "brew style failed for #{formula_path}" unless system("brew", "style", formula_path)

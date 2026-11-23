@@ -1,0 +1,14 @@
+# macOS
+.DS_Store
+
+# Editor
+*.swp
+*.swo
+*~
+
+# Environment files
+.env
+.env.*
+!.env.example
+*.local
+*.local.*

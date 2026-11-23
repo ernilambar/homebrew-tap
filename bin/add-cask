@@ -1,0 +1,142 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+# Creates a new cask from a GitHub release: fetches the sha256 of the
+# <Name>-macos-arm64.zip asset, reads the app name and minimum macOS version
+# from the bundle inside it, and writes Casks/<name>.rb from the standard
+# template used by every cask in this tap.
+#
+# Usage: bin/add-cask <name> <owner/repo> <version> <desc> [min_macos]
+# Example: bin/add-cask stade ernilambar/stade 0.1.0 "Run background scripts as launch agents"
+#
+# min_macos is the Homebrew symbol (:ventura, :sonoma, :sequoia) and is only
+# needed when LSMinimumSystemVersion cannot be read from the bundle.
+
+require "digest"
+require "json"
+require "open3"
+require "shellwords"
+require "tmpdir"
+
+name, owner_repo, version, desc, min_macos = ARGV
+version = version&.delete_prefix("v")
+
+if [name, owner_repo, version, desc].any?(&:nil?)
+  warn "Usage: bin/add-cask <name> <owner/repo> <version> <desc> [min_macos]"
+  exit 1
+end
+
+repo_root = File.expand_path("..", __dir__)
+cask_path = File.join(repo_root, "Casks", "#{name}.rb")
+
+abort "Cask already exists: #{cask_path}" if File.exist?(cask_path)
+
+tag = "v#{version}"
+
+# macOS major version => the Homebrew symbol used by depends_on macos:.
+MACOS_SYMBOLS = {
+  "11" => :big_sur,
+  "12" => :monterey,
+  "13" => :ventura,
+  "14" => :sonoma,
+  "15" => :sequoia,
+  "26" => :tahoe,
+}.freeze
+
+releases_json, gh_err, gh_status = Open3.capture3("gh", "release", "view", tag, "--repo", owner_repo, "--json", "assets")
+abort "Failed to fetch release #{tag} from #{owner_repo}:\n#{gh_err}" unless gh_status.success?
+
+assets = JSON.parse(releases_json)["assets"]
+asset_name = assets.map { |a| a["name"] }.find { |n| n.match?(/-macos-arm64\.zip\z/i) }
+unless asset_name
+  abort "No *-macos-arm64.zip asset in release #{tag}. Available: " \
+        "#{assets.map { |a| a['name'] }.join(', ')}"
+end
+
+asset = assets.find { |a| a["name"] == asset_name }
+asset_url = "https://github.com/#{owner_repo}/releases/download/#{tag}/#{asset_name}"
+
+# If the asset name embeds the version, interpolate it so release-cask can bump it.
+url_asset_name = asset_name.gsub(/(?<![\d.])#{Regexp.escape(version)}(?![\d.])/, '#{version}')
+
+puts "Reading #{asset_name}..."
+
+sha256, app_name, bundle_macos = Dir.mktmpdir do |dir|
+  zip = File.join(dir, asset_name)
+
+  puts "  Downloading #{asset_name}..."
+  system("curl", "-fsSL", "-o", zip, asset_url) || abort("Failed to download #{asset_url}")
+
+  digest = Digest::SHA256.file(zip).hexdigest
+  if asset["digest"] && asset["digest"].sub("sha256:", "") != digest
+    abort "sha256 mismatch: GitHub reports #{asset['digest']}, downloaded file hashes to #{digest}"
+  end
+
+  system("ditto", "-x", "-k", zip, dir) || abort("Failed to extract #{asset_name}")
+  bundle = Dir.glob(File.join(dir, "**", "*.app")).min_by { |p| p.count("/") }
+  next [digest, nil, nil] unless bundle
+
+  plist = File.join(bundle, "Contents", "Info.plist")
+  macos = if File.exist?(plist)
+    `plutil -extract LSMinimumSystemVersion raw -o - #{Shellwords.escape(plist)} 2>/dev/null`.strip
+  else
+    ""
+  end
+
+  [digest, File.basename(bundle, ".app"), macos]
+end
+
+abort "No .app bundle found inside #{asset_name}" unless app_name && !app_name.empty?
+
+if min_macos.nil? || min_macos.empty?
+  abort "Cannot read LSMinimumSystemVersion from #{app_name}.app; pass min_macos explicitly" if bundle_macos.to_s.empty?
+
+  min_macos = MACOS_SYMBOLS[bundle_macos.split(".").first]
+  abort "Unknown macOS version #{bundle_macos}; pass a known min_macos symbol" unless min_macos
+end
+min_macos = min_macos.to_s
+min_macos = ":#{min_macos}" unless min_macos.start_with?(":")
+
+# Big Sur is Homebrew's oldest supported macOS, so brew style rejects it as a
+# redundant minimum; plain `depends_on :macos` says the same thing.
+macos_dependency = min_macos == ":big_sur" ? ":macos" : "macos: #{min_macos}"
+
+template = <<~RUBY
+  cask "#{name}" do
+    version "#{version}"
+    sha256 "#{sha256}"
+
+    url "https://github.com/#{owner_repo}/releases/download/v\#{version}/#{url_asset_name}"
+    name #{app_name.inspect}
+    desc #{desc.inspect}
+    homepage "https://github.com/#{owner_repo}"
+
+    livecheck do
+      url :url
+      strategy :github_latest
+    end
+
+    depends_on arch: :arm64
+    depends_on #{macos_dependency}
+
+    app #{"#{app_name}.app".inspect}
+
+    # The app is ad-hoc signed, not notarized; drop the quarantine flag so
+    # Gatekeeper does not block the first launch.
+    postflight_steps do
+      run "/usr/bin/xattr", args: ["-dr", "com.apple.quarantine", #{"{{appdir}}/#{app_name}.app".inspect}]
+    end
+
+    # TODO: list only the paths the app owns, e.g. its Application Support
+    # directory or log directory. Never the user's own files.
+    # zap trash: "~/Library/Application Support/<bundle id>"
+  end
+RUBY
+
+File.write(cask_path, template)
+
+puts "Wrote #{cask_path}"
+abort "brew style failed for #{cask_path}" unless system("brew", "style", cask_path)
+
+puts "\nNext: fill in the zap trash path, audit it (see README.md#adding-a-new-cask)," \
+     "\nthen add it to the Casks table."
