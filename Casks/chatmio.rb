@@ -1,6 +1,6 @@
 cask "chatmio" do
-  version "0.1.1"
-  sha256 "b9a9857e2fd33298afd2013309dc32f5e0582c2836084a64672a8f18dbbef225"
+  version "0.1.2"
+  sha256 "dfff9773a64ec0b616f58a374c7cd9ebca11b6b63bdf0f8d538d3c762db14341"
 
   url "https://github.com/ernilambar/chatmio/releases/download/v#{version}/Chatmio-macos-arm64.zip"
   name "Chatmio"
