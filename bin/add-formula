@@ -3,7 +3,8 @@
 
 # Creates a new formula from a GitHub release: fetches the darwin-arm64
 # asset hash and repo license, then writes Formula/<name>.rb from the
-# standard arm64-only template (`depends_on arch: :arm64`).
+# standard arm64-only template (`depends_on arch: :arm64`). url/sha256 stay
+# top-level: Homebrew rejects a formula with no url on any simulated platform.
 #
 # Usage: bin/add-formula <name> <owner/repo> <version> <desc>
 # Example: bin/add-formula uplet ernilambar/uplet 1.0.0 "Checks if a URL is up and the page actually exists, not just a soft 404"
@@ -59,22 +60,18 @@ class_name = name.split(/[-_]/).map(&:capitalize).join
 
 license_line = license.empty? ? "" : "\n  license \"#{license}\""
 
-arch_line = "\n\n  depends_on arch: :arm64"
-
 template = <<~RUBY
   # typed: false
   # frozen_string_literal: true
 
   class #{class_name} < Formula
     desc #{desc.inspect}
-    homepage "https://github.com/#{owner_repo}"#{license_line}#{arch_line}
+    homepage "https://github.com/#{owner_repo}"
+    url "https://github.com/#{owner_repo}/releases/download/#{tag}/#{name}-darwin-arm64"
+    sha256 "#{arm64_sha}"#{license_line}
 
-    on_macos do
-      on_arm do
-        url "https://github.com/#{owner_repo}/releases/download/#{tag}/#{name}-darwin-arm64"
-        sha256 "#{arm64_sha}"
-      end
-    end
+    depends_on arch: :arm64
+    depends_on :macos
 
     def install
       bin.install Dir["#{name}-darwin-*"].first => "#{name}"
