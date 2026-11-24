@@ -4,8 +4,8 @@
 class Epfix < Formula
   desc "Fix episode names in place"
   homepage "https://github.com/ernilambar/epfix"
-  url "https://github.com/ernilambar/epfix/releases/download/v0.1.2/epfix-darwin-arm64"
-  sha256 "442cc6b06c6b238d0cec43d5076bdeb13d9e323b18ba328a06a0cc90107f85cc"
+  url "https://github.com/ernilambar/epfix/releases/download/v0.1.3/epfix-darwin-arm64"
+  sha256 "9eec60533e3f72232598369884f3add71a80db7bf8e6305a7db6cd88f0c677ec"
   license "MIT"
 
   depends_on arch: :arm64
