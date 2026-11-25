@@ -1,6 +1,6 @@
 cask "kaze" do
-  version "0.1.4"
-  sha256 "a221b0c809cbe303c14d42e97a4c936e7bf40c42b2180424c86ba9fbb382a377"
+  version "0.1.5"
+  sha256 "f60255469cf12986baf03892687dc61df1dfb6243ee0556ab18aac7f25242113"
 
   url "https://github.com/ernilambar/kaze/releases/download/v#{version}/Kaze-macos-arm64.zip"
   name "Kaze"
