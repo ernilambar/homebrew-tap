@@ -4,8 +4,8 @@
 class Komit < Formula
   desc "AI commit messages from your staged diff"
   homepage "https://github.com/ernilambar/komit"
-  url "https://github.com/ernilambar/komit/releases/download/v0.1.0/komit-v0.1.0-darwin-arm64.tar.gz"
-  sha256 "d712afc4efd2bcd72420e5a0c176cf394040b45baca1fc9837d8cbfc4adf9fa6"
+  url "https://github.com/ernilambar/komit/releases/download/v0.1.1/komit-v0.1.1-darwin-arm64.tar.gz"
+  sha256 "a33eb73fea1a93762b3bbc9e828a25d8fda4af37d4869b3b7bbbecfc4482c957"
   license "MIT"
 
   depends_on arch: :arm64
