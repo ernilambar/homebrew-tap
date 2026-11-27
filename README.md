@@ -19,6 +19,7 @@ brew trust ernilambar/tap
 | [epfix](https://github.com/ernilambar/epfix) | Fix episode names in place. |
 | [eyep](https://github.com/ernilambar/eyep) | Inspect geographical and network details for an IP address or local machine. |
 | [glot](https://github.com/ernilambar/glot-cli) | CLI tool for translating WordPress `.po` files using any OpenAI-compatible backend. |
+| [komit](https://github.com/ernilambar/komit) | AI commit messages from your staged diff. |
 | [skycast](https://github.com/ernilambar/skycast) | Terminal weather app. |
 | [uplet](https://github.com/ernilambar/uplet) | Checks if a URL is up and the page actually exists, not just a soft 404. |
 | [wxbot](https://github.com/ernilambar/wxbot) | AI weather assistant in your terminal. |
